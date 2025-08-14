@@ -15,7 +15,7 @@ class Video extends Model
         'thumbnail',
     ];
 
-    protected $appends = ['thumbnail_url']; // 👈 Tambahkan accessor otomatis
+    protected $appends = ['thumbnail_url']; 
 
     public function subject()
     {

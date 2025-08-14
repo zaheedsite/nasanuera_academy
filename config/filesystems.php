@@ -28,6 +28,10 @@ return [
     |
     */
 
+    'default' => env(key: 'FILESYSTEM_DRIVER', default: 's3'),
+
+    'cloud' => env(key: 'FILESYSTEM_CLOUD', default: 's3'),
+
     'disks' => [
 
         'local' => [
@@ -41,7 +45,7 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'url' => env('APP_URL') . '/storage',
             'visibility' => 'public',
             'throw' => false,
             'report' => false,
@@ -56,6 +60,11 @@ return [
             'url' => env('AWS_URL'),
             'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'visibility' => 'public',
+            'options' => [
+                'ACL' => 'public-read',
+                'CacheControl' => 'max-age=86400',
+            ],
             'throw' => false,
             'report' => false,
         ],

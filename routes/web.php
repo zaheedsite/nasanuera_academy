@@ -37,6 +37,16 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/{video}', [VideoCrudController::class, 'update'])->name('update');
         Route::delete('/{video}', [VideoCrudController::class, 'destroy'])->name('destroy');
         Route::get('/{video}', [VideoCrudController::class, 'show'])->name('show');
+        Route::post('/signed-url', [VideoCrudController::class, 'getSignedUrl'])
+            ->name('signed-url');
+        Route::post('/verify-upload', [VideoCrudController::class, 'verifyUpload'])
+            ->name('verify-upload');
+        Route::get('/debug-s3', [VideoCrudController::class, 'debugS3Config'])
+            ->name('debug-s3');
+        Route::post('/make-public', [VideoCrudController::class, 'makeVideosPublic'])
+            ->name('make-public');
+        Route::post('/make-file-public', [VideoCrudController::class, 'makeFilePublic'])
+            ->name('make-file-public');
     });
 
     Route::prefix('pdfs')->name('pdfs.')->group(function () {
@@ -51,4 +61,4 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Route login, register, dll dari Laravel Breeze / Jetstream
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

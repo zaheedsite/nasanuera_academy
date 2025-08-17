@@ -5,10 +5,7 @@
 @section('content')
     {{-- Notifikasi sukses --}}
     @if (session('success'))
-        <div
-            id="popup-success"
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30"
-        >
+        <div id="popup-success" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
             <div class="bg-success text-white px-5 py-3 rounded shadow-lg text-center animate-bounce">
                 {{ session('success') }}
             </div>
@@ -50,8 +47,8 @@
                         <td>{{ $loop->iteration }}</td>
                         <td>
                             @if ($video->thumbnail)
-                                <img src="{{ asset('storage/' . $video->thumbnail) }}" width="100"
-                                     class="rounded shadow-sm border" style="object-fit: cover; aspect-ratio: 16/9;">
+                                <img src="{{ $video->thumbnail }}" alt="Thumbnail {{ $video->title }}" width="100"
+                                    class="rounded shadow-sm border" style="object-fit: cover; aspect-ratio: 16/9;">
                             @else
                                 <span class="text-muted">Tidak ada thumbnail</span>
                             @endif
@@ -66,8 +63,8 @@
                             <a href="{{ route('videos.edit', $video->id) }}" class="btn btn-warning btn-sm text-white mb-1">
                                 <i class="fas fa-edit me-1"></i> Edit
                             </a>
-                            <form action="{{ route('videos.destroy', $video->id) }}" method="POST"
-                                  class="d-inline" onsubmit="return confirm('Yakin ingin menghapus video ini?');">
+                            <form action="{{ route('videos.destroy', $video->id) }}" method="POST" class="d-inline"
+                                onsubmit="return confirm('Yakin ingin menghapus video ini?');">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm text-white mb-1">
@@ -84,7 +81,7 @@
 
 @push('scripts')
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('#videoTable').DataTable({
                 language: {
                     search: "Cari:",

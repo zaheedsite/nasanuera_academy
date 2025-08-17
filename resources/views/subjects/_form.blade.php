@@ -53,11 +53,7 @@
                     {{-- Preview Thumbnail --}}
                     <div class="mt-2">
                         <img id="thumbnailPreview"
-                            src="{{ !empty($subject->thumbnail)
-                                    ? (\Illuminate\Support\Str::startsWith($subject->thumbnail, 'http')
-                                        ? $subject->thumbnail
-                                        : asset('storage/' . $subject->thumbnail))
-                                    : '' }}"
+                            src="{{ !empty($subject->thumbnail) ? $subject->thumbnail : '' }}"
                             class="rounded-lg border h-48 object-cover w-full"
                             alt="Preview Thumbnail"
                             style="{{ empty($subject->thumbnail) ? 'display: none;' : '' }}">

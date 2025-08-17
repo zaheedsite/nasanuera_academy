@@ -47,9 +47,8 @@
                         <td>{{ $loop->iteration }}</td>
                         <td>
                             @if ($subject->thumbnail)
-                                <img src="{{ \Illuminate\Support\Str::startsWith($subject->thumbnail, 'http') ? $subject->thumbnail : asset('storage/' . $subject->thumbnail) }}"
-                                    alt="Thumbnail" width="100" class="rounded shadow-sm border"
-                                    style="object-fit: cover; aspect-ratio: 16/9;">
+                                <img src="{{ $subject->thumbnail }}" alt="Thumbnail" width="100"
+                                    class="rounded shadow-sm border" style="object-fit: cover; aspect-ratio: 16/9;">
                             @else
                                 <span class="text-muted">Tidak ada thumbnail</span>
                             @endif
@@ -96,7 +95,7 @@
 
 @push('scripts')
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('#subjectTable').DataTable({
                 language: {
                     search: "Cari:",

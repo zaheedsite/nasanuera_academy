@@ -58,7 +58,7 @@
             @if ($video->thumbnail)
                 <div class="mb-8 text-center">
                     <span class="block text-sm text-gray-500 mb-2">Thumbnail</span>
-                    <img src="{{ asset('storage/' . $video->thumbnail) }}" alt="Thumbnail"
+                    <img src="{{ $video->thumbnail }}" alt="Thumbnail {{ $video->title }}"
                         class="mx-auto rounded-lg border w-full max-w-xs object-cover shadow">
                 </div>
             @endif

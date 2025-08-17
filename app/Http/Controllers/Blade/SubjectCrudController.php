@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class SubjectCrudController extends Controller
 {
@@ -37,8 +36,14 @@ class SubjectCrudController extends Controller
         ]);
 
         if ($request->hasFile('thumbnail')) {
-            $path = $request->file('thumbnail')->store('thumbnail_subject', 'public');
-            $validated['thumbnail'] = $path;
+            // Upload ke Spaces
+            $path = $request->file('thumbnail')->store('thumbnail_subject', 's3');
+
+            // Set file agar bisa diakses publik
+            Storage::disk('s3')->setVisibility($path, 'public');
+
+            // Simpan URL publik
+            $validated['thumbnail'] = Storage::url($path);
         }
 
         Subject::create($validated);
@@ -62,12 +67,20 @@ class SubjectCrudController extends Controller
         ]);
 
         if ($request->hasFile('thumbnail')) {
-            if ($subject->thumbnail && Storage::disk('public')->exists($subject->thumbnail)) {
-                Storage::disk('public')->delete($subject->thumbnail);
+            // Hapus thumbnail lama di Spaces kalau ada
+            if ($subject->thumbnail) {
+                $oldPath = str_replace(config('filesystems.disks.s3.url') . '/', '', $subject->thumbnail);
+                Storage::disk('s3')->delete($oldPath);
             }
 
-            $path = $request->file('thumbnail')->store('thumbnail_subject', 'public');
-            $validated['thumbnail'] = $path;
+            // Upload thumbnail baru ke Spaces
+            $path = $request->file('thumbnail')->store('thumbnail_subject', 's3');
+
+            // Set file agar bisa diakses publik
+            Storage::disk('s3')->setVisibility($path, 'public');
+
+            // Simpan URL publik
+            $validated['thumbnail'] = Storage::url($path);
         } else {
             $validated['thumbnail'] = $subject->thumbnail;
         }
@@ -79,8 +92,9 @@ class SubjectCrudController extends Controller
 
     public function destroy(Subject $subject)
     {
-        if ($subject->thumbnail && Storage::disk('public')->exists($subject->thumbnail)) {
-            Storage::disk('public')->delete($subject->thumbnail);
+        if ($subject->thumbnail) {
+            $oldPath = str_replace(config('filesystems.disks.s3.url') . '/', '', $subject->thumbnail);
+            Storage::disk('s3')->delete($oldPath);
         }
 
         $subject->delete();

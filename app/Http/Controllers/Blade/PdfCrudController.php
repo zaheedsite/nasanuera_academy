@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Pdf;
 use App\Models\Subject;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PdfCrudController extends Controller
 {
@@ -25,10 +26,16 @@ class PdfCrudController extends Controller
     {
         $validated = $request->validate([
             'subject_id' => 'required|exists:subjects,id',
-            'title' => 'required|string',
-            'pages' => 'required|numeric|min:1',
-            'pdf_url' => 'required|url',
+            'title'      => 'required|string',
+            'pages'      => 'required|numeric|min:1',
+            'pdf_file'   => 'required|file|mimes:pdf|max:10240', // max 10MB
         ]);
+
+        // Upload ke S3
+        $path = $request->file('pdf_file')->store('pdfs', 's3');
+        Storage::disk('s3')->setVisibility($path, 'public');
+
+        $validated['pdf_url'] = Storage::url($path);
 
         Pdf::create($validated);
 
@@ -50,10 +57,24 @@ class PdfCrudController extends Controller
     {
         $validated = $request->validate([
             'subject_id' => 'required|exists:subjects,id',
-            'title' => 'required|string',
-            'pages' => 'required|numeric|min:1',
-            'pdf_url' => 'required|url',
+            'title'      => 'required|string',
+            'pages'      => 'required|numeric|min:1',
+            'pdf_file'   => 'nullable|file|mimes:pdf|max:10240',
         ]);
+
+        if ($request->hasFile('pdf_file')) {
+            // Hapus file lama (opsional, kalau mau bersih)
+            if ($pdf->pdf_url) {
+                $oldPath = parse_url($pdf->pdf_url, PHP_URL_PATH);
+                $oldPath = ltrim($oldPath, '/');
+                Storage::disk('s3')->delete($oldPath);
+            }
+
+            // Upload baru
+            $path = $request->file('pdf_file')->store('pdfs', 's3');
+            Storage::disk('s3')->setVisibility($path, 'public');
+            $validated['pdf_url'] = Storage::url($path);
+        }
 
         $pdf->update($validated);
 
@@ -62,6 +83,12 @@ class PdfCrudController extends Controller
 
     public function destroy(Pdf $pdf)
     {
+        if ($pdf->pdf_url) {
+            $oldPath = parse_url($pdf->pdf_url, PHP_URL_PATH);
+            $oldPath = ltrim($oldPath, '/');
+            Storage::disk('s3')->delete($oldPath);
+        }
+
         $pdf->delete();
         return back()->with('success', 'PDF berhasil dihapus.');
     }
